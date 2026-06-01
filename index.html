@@ -4,38 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stock Claro — En 10 segundos sabés cuánto perdés y por qué</title>
-<meta name="description" content="Control de inventario para distribuidoras y fabricantes argentinas. En 10 segundos sabés cuánto perdés y por qué.">
+<meta name="description" content="Control de inventario para distribuidoras y fabricantes argentinas.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --sc-navy:#0a1628;
-  --sc-blue:#0078d4;
-  --sc-cyan:#00b4d8;
-  --sc-red:#e63946;
-  --sc-amber:#f4a261;
-  --sc-green:#2dc653;
+  --sc-navy:#0a1628;--sc-blue:#0078d4;--sc-cyan:#00b4d8;
+  --sc-red:#e63946;--sc-amber:#f4a261;--sc-green:#2dc653;
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-  --bg:#f5f7fa;
-  --surface:#ffffff;
-  --border:#e4e8ef;
-  --text:#0a1628;
-  --text2:#5a6a7a;
-  --radius:8px;
-  --radius-lg:12px;
+  --bg:#f5f7fa;--surface:#ffffff;--border:#e4e8ef;--text:#0a1628;--text2:#5a6a7a;
+  --radius:8px;--radius-lg:12px;
 }
 body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px 12px 48px;}
 .app{width:100%;max-width:680px;}
 .topbar{background:var(--sc-navy);padding:13px 18px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 .brand{display:flex;align-items:center;gap:10px;}
-.brand-logo{width:34px;height:34px;background:#ffffff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--sc-navy);letter-spacing:.5px;}
-.brand-name{font-size:16px;font-weight:600;color:white;letter-spacing:.02em;}
+.brand-logo{width:34px;height:34px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--sc-navy);}
+.brand-name{font-size:16px;font-weight:600;color:white;}
 .brand-name span{color:var(--sc-cyan);}
 .brand-tagline{font-size:10px;color:rgba(0,180,216,.7);margin-top:1px;}
 .top-right{display:flex;align-items:center;gap:10px;}
 .top-meta{font-size:11px;color:rgba(255,255,255,.4);}
 .btn-refresh{background:rgba(0,180,216,.15);border:.5px solid rgba(0,180,216,.4);color:var(--sc-cyan);padding:5px 11px;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;}
-.btn-refresh:hover{background:rgba(0,180,216,.25);}
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,180,216,.12);border-left:.5px solid rgba(0,180,216,.12);border-right:.5px solid rgba(0,180,216,.12);}
 .kpi{background:var(--sc-navy);padding:13px 15px;}
 .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.38);margin-bottom:4px;}
@@ -81,19 +71,18 @@ tr.warn td:first-child{border-left:2px solid var(--sc-amber);padding-left:12px;}
 .ep-crit{background:rgba(230,57,70,.1);color:#c0202d;}
 .ep-cero{background:rgba(230,57,70,.18);color:#c0202d;}
 .ep-sobre{background:rgba(244,162,97,.12);color:#b5620a;}
-.wa-bar{background:var(--sc-navy);padding:13px 18px;display:flex;gap:10px;align-items:flex-start;border-radius:0 0 var(--radius-lg) var(--radius-lg);}
+.wa-bar{background:var(--sc-navy);padding:13px 18px;display:flex;gap:10px;align-items:flex-start;}
 .wa-dot{width:34px;height:34px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
 .wa-dot svg{width:18px;height:18px;fill:white;}
 .wa-bbl{background:rgba(255,255,255,.07);border-radius:0 10px 10px 10px;padding:9px 13px;flex:1;border:.5px solid rgba(255,255,255,.1);}
 .wa-nm{font-size:11px;color:var(--sc-cyan);font-weight:600;margin-bottom:3px;}
 .wa-tx{font-size:12px;color:rgba(255,255,255,.82);line-height:1.6;white-space:pre-line;}
 .wa-tm{font-size:10px;color:rgba(255,255,255,.28);text-align:right;margin-top:4px;}
-.cta-bar{background:#f8fafc;border:.5px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:-1px;}
+.cta-bar{background:#f8fafc;border:.5px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 .cta-txt{font-size:13px;color:var(--text2);line-height:1.5;}
 .cta-txt strong{color:var(--text);display:block;margin-bottom:2px;font-size:14px;}
 .cta-btn{background:var(--sc-blue);color:white;border:none;padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;font-family:var(--font);}
-.cta-btn:hover{background:#0063b1;}
-@media(max-width:520px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.topbar{padding:10px 14px;}}
+@media(max-width:520px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
@@ -111,95 +100,96 @@ tr.warn td:first-child{border-left:2px solid var(--sc-amber);padding-left:12px;}
       <button class="btn-refresh" onclick="loadData()"><i class="ti ti-refresh"></i> Actualizar</button>
     </div>
   </div>
-
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-label">Capital en stock</div><div class="kpi-val" style="color:white" id="k-total">—</div><div class="kpi-sub" id="k-ars">—</div></div>
     <div class="kpi"><div class="kpi-label">Perdés por faltantes</div><div class="kpi-val" style="color:var(--sc-red)" id="k-perd">—</div><div class="kpi-sub" id="k-perd-sub">—</div></div>
     <div class="kpi"><div class="kpi-label">Plata parada</div><div class="kpi-val" style="color:var(--sc-amber)" id="k-muerto">—</div><div class="kpi-sub">sobrestock sin rotar</div></div>
     <div class="kpi"><div class="kpi-label">Alertas activas</div><div class="kpi-val" id="k-alertas" style="color:white">—</div><div class="kpi-sub" id="k-alertas-sub">—</div></div>
   </div>
-
   <div class="tabs">
     <div class="tab active" onclick="sw('urgente',this)"><i class="ti ti-alert-triangle"></i> Acción urgente</div>
     <div class="tab" onclick="sw('inventario',this)"><i class="ti ti-list"></i> Todo el inventario</div>
   </div>
-
   <div class="panel active" id="panel-urgente"><div id="urgente-contenido"><div class="empty-state"><i class="ti ti-loader"></i>Cargando...</div></div></div>
-
   <div class="panel" id="panel-inventario">
     <div style="overflow-x:auto;">
       <table><thead><tr><th>Producto</th><th>Stock actual</th><th>Estado</th><th>Valor USD</th></tr></thead>
-      <tbody id="tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2)">Cargando...</td></tr></tbody></table>
+      <tbody id="tbody"></tbody></table>
     </div>
   </div>
-
   <div class="wa-bar">
     <div class="wa-dot"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L0 24l6.335-1.51A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.36-.214-3.727.888.936-3.618-.234-.373A9.818 9.818 0 1112 21.818z"/></svg></div>
     <div class="wa-bbl"><div class="wa-nm">Stock Claro</div><div class="wa-tx" id="wa-tx">Cargando alertas...</div><div class="wa-tm" id="wa-tm"></div></div>
   </div>
-
   <div class="cta-bar">
     <div class="cta-txt"><strong>¿Querés ver esto con tu stock real?</strong>Setup en 20 minutos · $25 USD/mes · Sin contratos</div>
     <a class="cta-btn" href="https://wa.me/5491151034131?text=Hola%20Guido%2C%20quiero%20activar%20Stock%20Claro" target="_blank">Quiero empezar →</a>
   </div>
 </div>
-
 <script>
 const API="https://script.google.com/macros/s/AKfycbysjD1GBgIEMDJWOzCeewI7y9WXZEvzh5cCFpfmIC2zmJBKk0jA_ukghkCEWEYhOvEa/exec";
 const TOKEN="sc_guido_2026";
 const USD_RATE=1200;
 let prods=[];
 
+function calcEstado(s,min,opt){
+  if(s===0) return 'SIN STOCK';
+  if(s<min) return 'CRÍTICO';
+  if(s<opt) return 'BAJO';
+  if(s>opt*1.5) return 'SOBRESTOCK';
+  return 'OK';
+}
+
+function fallbackProds(){
+  const raw=[
+    {sku:'CEM001',descripcion:'Cemento Loma Negra 50kg',unidad:'Bolsa',stock_actual:230,stock_minimo:48,stock_optimo:96,costo_ars:5200,venta_prom_mes:80},
+    {sku:'ARE001',descripcion:'Arena Fina x m3',unidad:'m3',stock_actual:25,stock_minimo:10,stock_optimo:24,costo_ars:15000,venta_prom_mes:20},
+    {sku:'LAD001',descripcion:'Ladrillo Hueco 12x18x33',unidad:'Millar',stock_actual:7300,stock_minimo:3000,stock_optimo:6000,costo_ars:120,venta_prom_mes:5},
+    {sku:'CAL001',descripcion:'Cal Hidratada 25kg',unidad:'Bolsa',stock_actual:60,stock_minimo:20,stock_optimo:48,costo_ars:2800,venta_prom_mes:40},
+    {sku:'HIE001',descripcion:'Hierro 8mm x 12m',unidad:'Unidad',stock_actual:8,stock_minimo:20,stock_optimo:42,costo_ars:9500,venta_prom_mes:30},
+    {sku:'CER001',descripcion:'Cerámico 45x45',unidad:'Caja',stock_actual:22,stock_minimo:15,stock_optimo:30,costo_ars:8000,venta_prom_mes:25},
+    {sku:'PEG001',descripcion:'Pegamento Klaukol 30kg',unidad:'Bolsa',stock_actual:115,stock_minimo:30,stock_optimo:60,costo_ars:6000,venta_prom_mes:50},
+    {sku:'TOR001',descripcion:'Tornillo 6mm x 50mm',unidad:'Unidad',stock_actual:11500,stock_minimo:5000,stock_optimo:10000,costo_ars:15,venta_prom_mes:8000},
+    {sku:'PIN001',descripcion:'Pintura Látex Blanco 20L',unidad:'Balde',stock_actual:13,stock_minimo:10,stock_optimo:20,costo_ars:42000,venta_prom_mes:15},
+    {sku:'PLA001',descripcion:'Placa Yeso Durlock 9.5mm',unidad:'Unidad',stock_actual:55,stock_minimo:25,stock_optimo:50,costo_ars:9500,venta_prom_mes:40},
+    {sku:'CAN001',descripcion:'Caño Galvanizado 1" x 6m',unidad:'Unidad',stock_actual:0,stock_minimo:12,stock_optimo:25,costo_ars:9800,venta_prom_mes:20},
+  ];
+  return raw.map(p=>({...p,estado:calcEstado(p.stock_actual,p.stock_minimo,p.stock_optimo)}));
+}
+
 async function loadData(){
   try{
     const r=await fetch(API+"?token="+TOKEN+"&action=productos");
     const j=await r.json();
-    if(j.ok) prods=j.data.productos||[];
-    else throw new Error(j.error);
+    if(j.ok){
+      prods=(j.data.productos||[]).map(p=>({...p,estado:calcEstado(p.stock_actual,p.stock_minimo,p.stock_optimo)}));
+    } else throw new Error(j.error);
   }catch(e){
     prods=fallbackProds();
   }
   render();
 }
 
-function fallbackProds(){
-  return[
-    {sku:'CEM001',descripcion:'Cemento Loma Negra 50kg',unidad:'Bolsa',stock_actual:18,stock_minimo:48,stock_optimo:96,costo_ars:5200,venta_prom_mes:80,estado:'CRÍTICO'},
-    {sku:'ARE001',descripcion:'Arena Fina x m3',unidad:'m3',stock_actual:25,stock_minimo:10,stock_optimo:24,costo_ars:15000,venta_prom_mes:20,estado:'OK'},
-    {sku:'LAD001',descripcion:'Ladrillo Hueco 12x18x33',unidad:'Millar',stock_actual:7300,stock_minimo:3000,stock_optimo:6000,costo_ars:120,venta_prom_mes:5,estado:'OK'},
-    {sku:'CAL001',descripcion:'Cal Hidratada 25kg',unidad:'Bolsa',stock_actual:60,stock_minimo:20,stock_optimo:48,costo_ars:2800,venta_prom_mes:40,estado:'OK'},
-    {sku:'HIE001',descripcion:'Hierro 8mm x 12m',unidad:'Unidad',stock_actual:8,stock_minimo:20,stock_optimo:42,costo_ars:9500,venta_prom_mes:30,estado:'CRÍTICO'},
-    {sku:'CER001',descripcion:'Cerámico 45x45',unidad:'Caja',stock_actual:22,stock_minimo:15,stock_optimo:30,costo_ars:8000,venta_prom_mes:25,estado:'BAJO'},
-    {sku:'PEG001',descripcion:'Pegamento Klaukol 30kg',unidad:'Bolsa',stock_actual:115,stock_minimo:30,stock_optimo:60,costo_ars:6000,venta_prom_mes:50,estado:'OK'},
-    {sku:'TOR001',descripcion:'Tornillo 6mm x 50mm',unidad:'Unidad',stock_actual:11500,stock_minimo:5000,stock_optimo:10000,costo_ars:15,venta_prom_mes:8000,estado:'OK'},
-    {sku:'PIN001',descripcion:'Pintura Látex Blanco 20L',unidad:'Balde',stock_actual:13,stock_minimo:10,stock_optimo:20,costo_ars:42000,venta_prom_mes:15,estado:'BAJO'},
-    {sku:'PLA001',descripcion:'Placa Yeso Durlock 9.5mm',unidad:'Unidad',stock_actual:55,stock_minimo:25,stock_optimo:50,costo_ars:9500,venta_prom_mes:40,estado:'OK'},
-    {sku:'CAN001',descripcion:'Caño Galvanizado 1" x 6m',unidad:'Unidad',stock_actual:0,stock_minimo:12,stock_optimo:25,costo_ars:9800,venta_prom_mes:20,estado:'SIN STOCK'},
-  ];
-}
-
 const fmt=n=>Math.round(n||0).toLocaleString('es-AR');
 const fU=v=>'$'+fmt(v/USD_RATE)+' USD';
 const fARS=v=>'$'+fmt(v)+' ARS';
-
-function maxStock(p){return Math.round(p.stock_optimo*1.5);}
+const maxS=p=>Math.round(p.stock_optimo*1.5);
 
 function render(){
   const totalARS=prods.reduce((a,p)=>a+p.stock_actual*p.costo_ars,0);
-  const faltantes=prods.filter(p=>p.stock_actual<p.stock_minimo);
-  const sobres=prods.filter(p=>p.stock_actual>maxStock(p));
-  const alerts=prods.filter(p=>p.estado==='CRÍTICO'||p.estado==='SIN STOCK');
+  const faltantes=prods.filter(p=>p.estado==='CRÍTICO'||p.estado==='SIN STOCK');
+  const sobres=prods.filter(p=>p.estado==='SOBRESTOCK');
+  const alerts=faltantes.length;
   const perdARS=faltantes.reduce((a,p)=>a+(p.stock_minimo-p.stock_actual)*p.costo_ars,0);
-  const muertoARS=sobres.reduce((a,p)=>a+(p.stock_actual-maxStock(p))*p.costo_ars,0);
-  const al=alerts.length;
+  const muertoARS=sobres.reduce((a,p)=>a+(p.stock_actual-maxS(p))*p.costo_ars,0);
 
   document.getElementById('k-total').textContent=fU(totalARS);
   document.getElementById('k-ars').textContent=fARS(totalARS);
   document.getElementById('k-perd').textContent=fU(perdARS);
   document.getElementById('k-perd-sub').textContent=faltantes.length+' producto'+(faltantes.length!==1?'s':'')+' bajo mínimo';
   document.getElementById('k-muerto').textContent=fU(muertoARS);
-  document.getElementById('k-alertas').textContent=al;
-  document.getElementById('k-alertas').style.color=al>0?'var(--sc-red)':'var(--sc-green)';
+  document.getElementById('k-alertas').textContent=alerts;
+  document.getElementById('k-alertas').style.color=alerts>0?'var(--sc-red)':'var(--sc-green)';
   document.getElementById('k-alertas-sub').textContent='de '+prods.length+' productos';
   document.getElementById('top-meta').textContent=prods.length+' productos · '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
 
@@ -223,8 +213,8 @@ function rUrgente(faltantes,sobres){
     if(sobres.length){
       html+='<div class="seccion-label naranja" style="margin-top:6px"><i class="ti ti-lock"></i>Sobrestock — plata parada sin rotar</div>';
       html+=sobres.map(p=>{
-        const excess=p.stock_actual-maxStock(p);
-        return`<div class="urgente-item sobrestock"><div><div class="ui-prod">${p.descripcion}</div><div class="ui-det">Tenés ${fmt(p.stock_actual)} ${p.unidad} · máximo recomendado ${fmt(maxStock(p))} · sobran ${fmt(excess)}</div></div><div class="ui-monto"><div class="ui-monto-val amber">${fU(excess*p.costo_ars)}</div><div class="ui-monto-label">inmovilizado</div></div></div>`;
+        const excess=p.stock_actual-maxS(p);
+        return`<div class="urgente-item sobrestock"><div><div class="ui-prod">${p.descripcion}</div><div class="ui-det">Tenés ${fmt(p.stock_actual)} ${p.unidad} · máximo recomendado ${fmt(maxS(p))} · sobran ${fmt(excess)}</div></div><div class="ui-monto"><div class="ui-monto-val amber">${fU(excess*p.costo_ars)}</div><div class="ui-monto-label">inmovilizado</div></div></div>`;
       }).join('');
     }
   }
@@ -232,14 +222,13 @@ function rUrgente(faltantes,sobres){
 }
 
 function rInventario(){
-  const tb=document.getElementById('tbody');
-  tb.innerHTML=prods.map(p=>{
+  document.getElementById('tbody').innerHTML=prods.map(p=>{
     const est=p.estado;
-    const rc=(est==='CRÍTICO'||est==='SIN STOCK')?'crit':est==='BAJO'?'warn':'';
-    const ref=Math.max(maxStock(p),p.stock_actual,1);
+    const rc=(est==='CRÍTICO'||est==='SIN STOCK')?'crit':(est==='BAJO'||est==='SOBRESTOCK')?'warn':'';
+    const ref=Math.max(maxS(p),p.stock_actual,1);
     const pct=Math.min(100,Math.round(p.stock_actual/ref*100));
     const optPct=Math.min(100,Math.round(p.stock_optimo/ref*100));
-    const barColor=est==='OK'?'var(--sc-green)':est==='BAJO'?'var(--sc-amber)':'var(--sc-red)';
+    const barColor=est==='OK'?'var(--sc-green)':(est==='BAJO'||est==='SOBRESTOCK')?'var(--sc-amber)':'var(--sc-red)';
     const pill=est==='OK'?`<span class="est-pill ep-ok"><i class="ti ti-check"></i> ok</span>`:
       est==='BAJO'?`<span class="est-pill ep-bajo"><i class="ti ti-arrow-down"></i> bajo</span>`:
       est==='CRÍTICO'?`<span class="est-pill ep-crit"><i class="ti ti-alert-triangle"></i> crítico</span>`:
