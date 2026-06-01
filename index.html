@@ -3,360 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stock Claro</title>
+<title>Stock Claro — En 10 segundos sabés cuánto perdés y por qué</title>
+<meta name="description" content="Control de inventario para distribuidoras y fabricantes argentinas. En 10 segundos sabés cuánto perdés y por qué.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --black: #0a0a0a; --white: #ffffff; --bg: #f5f2eb; --surface: #ffffff;
-    --border: #e4e0d8; --text: #0a0a0a; --text-2: #6b6256;
-    --accent: #d4420a; --green: #1a6b3c; --orange: #c47300; --blue: #1a3a6b;
-    --bg-2: #f0ece4; --radius: 8px; --radius-sm: 5px;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  }
-  body { font-family: var(--font); background: var(--bg); min-height: 100vh; }
-  .loading-screen { position: fixed; inset: 0; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; transition: opacity .4s; }
-  .loading-screen.hide { opacity: 0; pointer-events: none; }
-  .loading-logo { font-size: 24px; font-weight: 600; color: white; letter-spacing: .02em; margin-bottom: 24px; }
-  .loading-logo span { color: var(--accent); }
-  .loading-bar-wrap { width: 200px; height: 3px; background: rgba(255,255,255,.15); border-radius: 2px; overflow: hidden; }
-  .loading-bar { height: 100%; background: var(--accent); border-radius: 2px; animation: loadbar 1.5s ease-in-out infinite; }
-  @keyframes loadbar { 0%{width:0%} 50%{width:70%} 100%{width:100%} }
-  .loading-txt { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 14px; }
-  .app { max-width: 680px; margin: 0 auto; padding: 16px 12px 48px; }
-  .topbar { background: var(--black); color: white; padding: 12px 18px; border-radius: var(--radius) var(--radius) 0 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-  .brand { font-size: 15px; font-weight: 600; letter-spacing: .02em; }
-  .brand span { color: var(--accent); }
-  .top-right { display: flex; align-items: center; gap: 10px; }
-  .top-client { font-size: 12px; color: rgba(255,255,255,.4); }
-  .top-time { font-size: 11px; color: rgba(255,255,255,.3); }
-  .btn-refresh { background: rgba(255,255,255,.1); border: .5px solid rgba(255,255,255,.2); color: white; padding: 5px 10px; border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; font-family: var(--font); }
-  .banner-inact { background: var(--orange); color: white; padding: 9px 18px; font-size: 12px; font-weight: 500; display: none; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
-  .banner-inact.show { display: block; }
-  .impact-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
-  .ic { background: var(--surface); padding: 13px 14px; }
-  .ic.dark { background: var(--black); }
-  .ic-l { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-2); margin-bottom: 3px; }
-  .ic.dark .ic-l { color: rgba(255,255,255,.38); }
-  .ic-v { font-size: 19px; font-weight: 600; line-height: 1.2; }
-  .ic.dark .ic-v { color: white; }
-  .ic-v.red { color: var(--accent); } .ic-v.green { color: var(--green); } .ic-v.orange { color: var(--orange); }
-  .ic-s { font-size: 11px; color: var(--text-2); margin-top: 2px; }
-  .ic.dark .ic-s { color: rgba(255,255,255,.28); }
-  .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); border-left: 1px solid var(--border); border-right: 1px solid var(--border); overflow-x: auto; }
-  .tab { padding: 10px 15px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-2); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; font-family: var(--font); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .panel { display: none; border: 1px solid var(--border); border-top: none; background: var(--surface); }
-  .panel.active { display: block; }
-  .tbl-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border); background: var(--bg-2); white-space: nowrap; }
-  td { padding: 9px 12px; border-bottom: .5px solid var(--border); color: var(--text); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr.crit td { background: #fff8f6; } tr.crit td:first-child { border-left: 3px solid var(--accent); padding-left: 9px; }
-  tr.warn td { background: #fffbf2; } tr.warn td:first-child { border-left: 3px solid var(--orange); padding-left: 9px; }
-  .bw { width: 52px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 5px; }
-  .bf { height: 100%; border-radius: 3px; }
-  .bok { background: var(--green); } .bwn { background: var(--orange); } .bct { background: var(--accent); }
-  .sok { color: var(--green); font-size: 11px; } .swn { color: var(--orange); font-size: 11px; font-weight: 600; } .sct { color: var(--accent); font-size: 11px; font-weight: 600; }
-  .comp-hdr { padding: 13px 16px 6px; display: flex; justify-content: space-between; align-items: baseline; border-bottom: .5px solid var(--border); flex-wrap: wrap; gap: 4px; }
-  .comp-title { font-size: 13px; font-weight: 600; } .comp-sub { font-size: 11px; color: var(--text-2); }
-  .comp-list { padding: 0 10px 8px; }
-  .ci { padding: 10px 6px; border-bottom: .5px solid var(--border); } .ci:last-child { border-bottom: none; }
-  .ci-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .ci-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .delta { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-  .do { background: #fce8e2; color: #a83000; } .du { background: #fff3e0; color: #8a4700; } .dok { background: #e4f2e9; color: #0f5c2e; }
-  .bars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .bc { display: flex; flex-direction: column; gap: 3px; }
-  .bcl { font-size: 10px; color: var(--text-2); text-transform: uppercase; letter-spacing: .05em; }
-  .bcw { height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
-  .bcf { height: 100%; border-radius: 4px; }
-  .br { background: #378add; } .bop { background: var(--green); }
-  .bcv { font-size: 11px; font-weight: 600; margin-top: 1px; } .bcv span { font-weight: 400; color: var(--text-2); }
-  .perd-top { padding: 14px 16px; border-bottom: .5px solid var(--border); }
-  .perd-num { font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1; }
-  .perd-sub { font-size: 12px; color: var(--text-2); margin-top: 4px; }
-  .perd-break { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-bottom: .5px solid var(--border); }
-  .pb { background: var(--surface); padding: 12px 16px; }
-  .pb-l { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-2); margin-bottom: 3px; }
-  .pb-v { font-size: 17px; font-weight: 600; }
-  .perd-list { padding: 6px 16px; }
-  .pr { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: .5px solid var(--border); font-size: 13px; gap: 8px; }
-  .pr:last-child { border-bottom: none; }
-  .pr-amt { color: var(--accent); font-weight: 600; white-space: nowrap; }
-  .mov-filters { display: flex; gap: 6px; padding: 10px 12px; border-bottom: .5px solid var(--border); overflow-x: auto; }
-  .mf { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; border: .5px solid var(--border); background: var(--surface); color: var(--text-2); font-family: var(--font); }
-  .mf.active { background: var(--black); color: white; border-color: var(--black); }
-  .mov-list { max-height: 400px; overflow-y: auto; }
-  .mov-item { padding: 10px 14px; border-bottom: .5px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
-  .mov-item:last-child { border-bottom: none; }
-  .mov-ic { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; font-weight: 600; margin-top: 1px; }
-  .mic-in { background: #e4f2e9; color: var(--green); } .mic-out { background: #fce8e2; color: var(--accent); } .mic-adj { background: #fff3e0; color: var(--orange); }
-  .mov-main { flex: 1; min-width: 0; }
-  .mov-prod { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mov-meta { font-size: 11px; color: var(--text-2); margin-top: 1px; }
-  .mov-right { text-align: right; flex-shrink: 0; }
-  .mov-qty { font-size: 13px; font-weight: 600; } .mqin { color: var(--green); } .mqout { color: var(--accent); } .mqadj { color: var(--orange); }
-  .mov-stock { font-size: 10px; color: var(--text-2); margin-top: 1px; }
-  .orig-badge { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 8px; margin-top: 2px; }
-  .ow { background: #e6f1fb; color: #0c447c; } .om { background: var(--bg-2); color: var(--text-2); } .oi { background: #fff3e0; color: #8a4700; }
-  .roi-wrap { padding: 16px 18px; }
-  .roi-sub { font-size: 13px; color: var(--text-2); margin-bottom: 16px; line-height: 1.6; }
-  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .sl-lbl { font-size: 12px; color: var(--text-2); width: 158px; flex-shrink: 0; }
-  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
-  .sl-val { font-size: 13px; font-weight: 600; width: 58px; text-align: right; flex-shrink: 0; }
-  .roi-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-top: 16px; }
-  .roi-c { background: var(--bg-2); padding: 14px; text-align: center; }
-  .roi-cl { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-2); margin-bottom: 4px; }
-  .roi-cv { font-size: 20px; font-weight: 700; }
-  .roi-cv.g { color: var(--green); } .roi-cv.r { color: var(--accent); }
-  .roi-v { margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.55; font-weight: 500; }
-  .vp { background: #e4f2e9; color: #0f5c2e; } .vn { background: #fce8e2; color: #a83000; }
-  .wa-bar { background: var(--black); padding: 13px 18px; display: flex; gap: 10px; align-items: flex-start; }
-  .wa-ic { width: 34px; height: 34px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-  .wa-ic svg { width: 18px; height: 18px; fill: white; }
-  .wa-bbl { background: #1e1e1e; border-radius: 0 10px 10px 10px; padding: 9px 13px; flex: 1; border: .5px solid rgba(255,255,255,.08); }
-  .wa-nm { font-size: 11px; color: #5dff9a; font-weight: 600; margin-bottom: 3px; }
-  .wa-tx { font-size: 12px; color: rgba(255,255,255,.82); line-height: 1.6; white-space: pre-line; }
-  .wa-tm { font-size: 10px; color: rgba(255,255,255,.28); text-align: right; margin-top: 5px; }
-  .cta-bar { background: var(--bg-2); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .cta-txt { font-size: 13px; color: var(--text-2); line-height: 1.5; }
-  .cta-txt strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 14px; }
-  .cta-btn { background: var(--accent); color: white; border: none; padding: 11px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; font-family: var(--font); }
-  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--black); color: white; padding: 9px 14px; border-radius: var(--radius-sm); font-size: 13px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 99; }
-  .toast.show { opacity: 1; }
-  @media (max-width: 520px) { .impact-grid { grid-template-columns: repeat(2,1fr); } }
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --sc-navy:#0a1628;
+  --sc-blue:#0078d4;
+  --sc-cyan:#00b4d8;
+  --sc-red:#e63946;
+  --sc-amber:#f4a261;
+  --sc-green:#2dc653;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --bg:#f5f7fa;
+  --surface:#ffffff;
+  --border:#e4e8ef;
+  --text:#0a1628;
+  --text2:#5a6a7a;
+  --radius:8px;
+  --radius-lg:12px;
+}
+body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px 12px 48px;}
+.app{width:100%;max-width:680px;}
+.topbar{background:var(--sc-navy);padding:13px 18px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-logo{width:34px;height:34px;background:#ffffff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--sc-navy);letter-spacing:.5px;}
+.brand-name{font-size:16px;font-weight:600;color:white;letter-spacing:.02em;}
+.brand-name span{color:var(--sc-cyan);}
+.brand-tagline{font-size:10px;color:rgba(0,180,216,.7);margin-top:1px;}
+.top-right{display:flex;align-items:center;gap:10px;}
+.top-meta{font-size:11px;color:rgba(255,255,255,.4);}
+.btn-refresh{background:rgba(0,180,216,.15);border:.5px solid rgba(0,180,216,.4);color:var(--sc-cyan);padding:5px 11px;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;}
+.btn-refresh:hover{background:rgba(0,180,216,.25);}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,180,216,.12);border-left:.5px solid rgba(0,180,216,.12);border-right:.5px solid rgba(0,180,216,.12);}
+.kpi{background:var(--sc-navy);padding:13px 15px;}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.38);margin-bottom:4px;}
+.kpi-val{font-size:19px;font-weight:600;line-height:1.2;}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.28);margin-top:2px;}
+.tabs{display:flex;background:var(--surface);border-left:.5px solid var(--border);border-right:.5px solid var(--border);border-bottom:1px solid var(--border);}
+.tab{padding:11px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:var(--font);display:flex;align-items:center;gap:6px;}
+.tab.active{color:var(--sc-blue);border-bottom-color:var(--sc-blue);}
+.tab i{font-size:15px;}
+.panel{display:none;border:.5px solid var(--border);border-top:none;background:var(--surface);}
+.panel.active{display:block;}
+.seccion-label{padding:10px 18px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:6px;}
+.seccion-label.rojo{color:var(--sc-red);}
+.seccion-label.naranja{color:var(--sc-amber);}
+.seccion-label i{font-size:13px;}
+.urgente-item{padding:12px 18px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.urgente-item:last-child{border-bottom:none;}
+.urgente-item.faltante{border-left:3px solid var(--sc-red);padding-left:15px;}
+.urgente-item.sobrestock{border-left:3px solid var(--sc-amber);padding-left:15px;}
+.ui-prod{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.ui-det{font-size:12px;color:var(--text2);}
+.ui-monto{text-align:right;flex-shrink:0;}
+.ui-monto-val{font-size:15px;font-weight:600;}
+.ui-monto-val.red{color:var(--sc-red);}
+.ui-monto-val.amber{color:var(--sc-amber);}
+.ui-monto-label{font-size:10px;color:var(--text2);margin-top:1px;}
+.empty-state{padding:32px 18px;text-align:center;color:var(--text2);font-size:13px;}
+.empty-state i{font-size:32px;color:var(--sc-green);display:block;margin-bottom:8px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border);background:#f8fafc;white-space:nowrap;}
+td{padding:10px 14px;border-bottom:.5px solid var(--border);color:var(--text);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr.crit td{background:rgba(230,57,70,.04);}
+tr.crit td:first-child{border-left:2px solid var(--sc-red);padding-left:12px;}
+tr.warn td{background:rgba(244,162,97,.04);}
+tr.warn td:first-child{border-left:2px solid var(--sc-amber);padding-left:12px;}
+.stock-track{position:relative;height:8px;background:var(--border);border-radius:4px;width:90px;display:inline-block;vertical-align:middle;margin-right:6px;}
+.stock-fill{height:100%;border-radius:4px;position:absolute;left:0;top:0;}
+.stock-marker{position:absolute;top:-3px;width:2px;height:14px;background:var(--sc-navy);border-radius:1px;opacity:.5;}
+.est-pill{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;}
+.ep-ok{background:rgba(45,198,83,.1);color:#1a8c3e;}
+.ep-bajo{background:rgba(244,162,97,.12);color:#b5620a;}
+.ep-crit{background:rgba(230,57,70,.1);color:#c0202d;}
+.ep-cero{background:rgba(230,57,70,.18);color:#c0202d;}
+.ep-sobre{background:rgba(244,162,97,.12);color:#b5620a;}
+.wa-bar{background:var(--sc-navy);padding:13px 18px;display:flex;gap:10px;align-items:flex-start;border-radius:0 0 var(--radius-lg) var(--radius-lg);}
+.wa-dot{width:34px;height:34px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.wa-dot svg{width:18px;height:18px;fill:white;}
+.wa-bbl{background:rgba(255,255,255,.07);border-radius:0 10px 10px 10px;padding:9px 13px;flex:1;border:.5px solid rgba(255,255,255,.1);}
+.wa-nm{font-size:11px;color:var(--sc-cyan);font-weight:600;margin-bottom:3px;}
+.wa-tx{font-size:12px;color:rgba(255,255,255,.82);line-height:1.6;white-space:pre-line;}
+.wa-tm{font-size:10px;color:rgba(255,255,255,.28);text-align:right;margin-top:4px;}
+.cta-bar{background:#f8fafc;border:.5px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:-1px;}
+.cta-txt{font-size:13px;color:var(--text2);line-height:1.5;}
+.cta-txt strong{color:var(--text);display:block;margin-bottom:2px;font-size:14px;}
+.cta-btn{background:var(--sc-blue);color:white;border:none;padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;font-family:var(--font);}
+.cta-btn:hover{background:#0063b1;}
+@media(max-width:520px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.topbar{padding:10px 14px;}}
 </style>
 </head>
 <body>
-
-<div class="loading-screen" id="loading">
-  <div class="loading-logo">Stock<span>Claro</span></div>
-  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
-  <div class="loading-txt" id="loading-txt">Conectando con tu inventario...</div>
-</div>
-
-<div class="app" id="app" style="display:none;">
+<div class="app">
   <div class="topbar">
-    <div class="brand">Stock<span>Claro</span></div>
+    <div class="brand">
+      <div class="brand-logo">SC</div>
+      <div>
+        <div class="brand-name">Stock<span>Claro</span></div>
+        <div class="brand-tagline">En 10 segundos sabés cuánto perdés y por qué</div>
+      </div>
+    </div>
     <div class="top-right">
-      <span class="top-client" id="top-client"></span>
-      <span class="top-time" id="top-time"></span>
-      <button class="btn-refresh" onclick="loadData()">↺ Actualizar</button>
+      <span class="top-meta" id="top-meta"></span>
+      <button class="btn-refresh" onclick="loadData()"><i class="ti ti-refresh"></i> Actualizar</button>
     </div>
   </div>
-  <div class="banner-inact" id="banner-inact">⚠️ Hace más de 3 días sin movimientos. ¿Todo bien?</div>
-  <div class="impact-grid" id="ig"></div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Capital en stock</div><div class="kpi-val" style="color:white" id="k-total">—</div><div class="kpi-sub" id="k-ars">—</div></div>
+    <div class="kpi"><div class="kpi-label">Perdés por faltantes</div><div class="kpi-val" style="color:var(--sc-red)" id="k-perd">—</div><div class="kpi-sub" id="k-perd-sub">—</div></div>
+    <div class="kpi"><div class="kpi-label">Plata parada</div><div class="kpi-val" style="color:var(--sc-amber)" id="k-muerto">—</div><div class="kpi-sub">sobrestock sin rotar</div></div>
+    <div class="kpi"><div class="kpi-label">Alertas activas</div><div class="kpi-val" id="k-alertas" style="color:white">—</div><div class="kpi-sub" id="k-alertas-sub">—</div></div>
+  </div>
+
   <div class="tabs">
-    <div class="tab active" onclick="sw('stock')">Inventario</div>
-    <div class="tab" onclick="sw('comp')">Real vs Óptimo</div>
-    <div class="tab" onclick="sw('perd')">Pérdidas</div>
-    <div class="tab" onclick="sw('movs')">Movimientos</div>
-    <div class="tab" onclick="sw('roi')">ROI</div>
+    <div class="tab active" onclick="sw('urgente',this)"><i class="ti ti-alert-triangle"></i> Acción urgente</div>
+    <div class="tab" onclick="sw('inventario',this)"><i class="ti ti-list"></i> Todo el inventario</div>
   </div>
-  <div class="panel active" id="panel-stock">
-    <div class="tbl-wrap">
-      <table><thead><tr><th>Producto</th><th>Stock</th><th>Estado</th><th>Óptimo</th><th>Valor USD</th></tr></thead>
-      <tbody id="tbody"></tbody></table>
+
+  <div class="panel active" id="panel-urgente"><div id="urgente-contenido"><div class="empty-state"><i class="ti ti-loader"></i>Cargando...</div></div></div>
+
+  <div class="panel" id="panel-inventario">
+    <div style="overflow-x:auto;">
+      <table><thead><tr><th>Producto</th><th>Stock actual</th><th>Estado</th><th>Valor USD</th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2)">Cargando...</td></tr></tbody></table>
     </div>
   </div>
-  <div class="panel" id="panel-comp">
-    <div class="comp-hdr"><span class="comp-title">Stock real vs nivel óptimo</span><span class="comp-sub">Azul = tenés · Verde = necesitás</span></div>
-    <div class="comp-list" id="comp-list"></div>
-  </div>
-  <div class="panel" id="panel-perd">
-    <div class="perd-top"><div class="perd-num" id="pn">$0 USD</div><div class="perd-sub">pérdidas estimadas este mes por faltantes</div></div>
-    <div class="perd-break" id="pb"></div>
-    <div class="perd-list" id="pl"></div>
-  </div>
-  <div class="panel" id="panel-movs">
-    <div class="mov-filters">
-      <button class="mf active" onclick="filtrarMov('todos',this)">Todos</button>
-      <button class="mf" onclick="filtrarMov('entrada',this)">Entradas</button>
-      <button class="mf" onclick="filtrarMov('salida',this)">Salidas</button>
-      <button class="mf" onclick="filtrarMov('whatsapp',this)">WhatsApp</button>
-    </div>
-    <div class="mov-list" id="mov-list"></div>
-  </div>
-  <div class="panel" id="panel-roi">
-    <div class="roi-wrap">
-      <div class="roi-sub">Calculá tu retorno de inversión con Stock Claro:</div>
-      <div class="slider-row"><span class="sl-lbl">Ventas mensuales (USD)</span><input type="range" id="rv" min="500" max="50000" step="500" value="8000" oninput="rROI()"/><span class="sl-val" id="svv">$8.000</span></div>
-      <div class="slider-row"><span class="sl-lbl">% perdido por faltantes</span><input type="range" id="rp" min="1" max="30" step="1" value="8" oninput="rROI()"/><span class="sl-val" id="svp">8%</span></div>
-      <div class="slider-row"><span class="sl-lbl">% recuperable con sistema</span><input type="range" id="rr" min="30" max="90" step="5" value="60" oninput="rROI()"/><span class="sl-val" id="svr">60%</span></div>
-      <div class="roi-cards" id="roi-cards"></div>
-      <div class="roi-v" id="roi-v"></div>
-    </div>
-  </div>
+
   <div class="wa-bar">
-    <div class="wa-ic"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L0 24l6.335-1.51A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.36-.214-3.727.888.936-3.618-.234-.373A9.818 9.818 0 1112 21.818z"/></svg></div>
-    <div class="wa-bbl"><div class="wa-nm">Stock Claro</div><div class="wa-tx" id="wa-tx">Cargando...</div><div class="wa-tm" id="wa-tm"></div></div>
+    <div class="wa-dot"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L0 24l6.335-1.51A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.374l-.36-.214-3.727.888.936-3.618-.234-.373A9.818 9.818 0 1112 21.818z"/></svg></div>
+    <div class="wa-bbl"><div class="wa-nm">Stock Claro</div><div class="wa-tx" id="wa-tx">Cargando alertas...</div><div class="wa-tm" id="wa-tm"></div></div>
   </div>
+
   <div class="cta-bar">
-    <div class="cta-txt"><strong>¿Querés activar las alertas en tu WhatsApp?</strong>Recibí el resumen diario a las 8am · $25 USD/mes</div>
-    <a class="cta-btn" href="https://wa.me/5491151034131?text=Hola%20Guido%2C%20quiero%20activar%20Stock%20Claro" target="_blank">Activar alertas →</a>
+    <div class="cta-txt"><strong>¿Querés ver esto con tu stock real?</strong>Setup en 20 minutos · $25 USD/mes · Sin contratos</div>
+    <a class="cta-btn" href="https://wa.me/5491151034131?text=Hola%20Guido%2C%20quiero%20activar%20Stock%20Claro" target="_blank">Quiero empezar →</a>
   </div>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbysjD1GBgIEMDJWOzCeewI7y9WXZEvzh5cCFpfmIC2zmJBKk0jA_ukghkCEWEYhOvEa/exec";
-const TOKEN = "sc_guido_2026";
-let data = { dashboard: null, productos: [], movimientos: [] };
-let movFilter = "todos";
+const API="https://script.google.com/macros/s/AKfycbysjD1GBgIEMDJWOzCeewI7y9WXZEvzh5cCFpfmIC2zmJBKk0jA_ukghkCEWEYhOvEa/exec";
+const TOKEN="sc_guido_2026";
+const USD_RATE=1200;
+let prods=[];
 
-async function fetchAPI(action) {
-  const res = await fetch(`${API_URL}?token=${TOKEN}&action=${action}`);
-  const json = await res.json();
-  if (!json.ok) throw new Error(json.error || "Error API");
-  return json.data;
-}
-
-async function loadData() {
-  document.getElementById("loading-txt").textContent = "Conectando con tu inventario...";
-  document.getElementById("loading").classList.remove("hide");
-  document.getElementById("loading").style.display = "flex";
-  try {
-    const [dash, prods, movs] = await Promise.all([fetchAPI("dashboard"), fetchAPI("productos"), fetchAPI("movimientos")]);
-    data.dashboard = dash;
-    data.productos = prods.productos || [];
-    data.movimientos = movs.movimientos || [];
-    render();
-    document.getElementById("loading").classList.add("hide");
-    document.getElementById("app").style.display = "block";
-    setTimeout(() => document.getElementById("loading").style.display = "none", 500);
-    document.getElementById("top-time").textContent = "· " + new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
-  } catch(e) {
-    document.getElementById("loading-txt").textContent = "Error: " + e.message;
+async function loadData(){
+  try{
+    const r=await fetch(API+"?token="+TOKEN+"&action=productos");
+    const j=await r.json();
+    if(j.ok) prods=j.data.productos||[];
+    else throw new Error(j.error);
+  }catch(e){
+    prods=fallbackProds();
   }
+  render();
 }
 
-function render() {
-  const d = data.dashboard, p = data.productos, usd = d.usd_rate || 1200;
-  if (d.alerta_inactividad) document.getElementById("banner-inact").classList.add("show");
-  document.getElementById("top-client").textContent = p.length + " SKUs";
-  document.getElementById("ig").innerHTML = `
-    <div class="ic dark"><div class="ic-l">Capital en stock</div><div class="ic-v white">$${fmt(d.total_stock_usd)} USD</div><div class="ic-s">${fmtARS(d.total_stock_ars)}</div></div>
-    <div class="ic"><div class="ic-l">Perdés por faltantes</div><div class="ic-v red">$${fmt(d.perdida_usd)} USD</div><div class="ic-s">${d.alertas_criticas} críticos</div></div>
-    <div class="ic"><div class="ic-l">Capital parado</div><div class="ic-v orange">$${fmt(d.capital_muerto_usd)} USD</div><div class="ic-s">sobre óptimo</div></div>
-    <div class="ic"><div class="ic-l">Alertas</div><div class="ic-v ${d.alertas_criticas>0?'red':'green'}">${d.alertas_criticas}</div><div class="ic-s">de ${d.total_skus} productos</div></div>`;
-  rTabla(p,usd); rComp(p,usd); rPerd(p,usd); rMovs(); rROI(); rWA(p,d);
+function fallbackProds(){
+  return[
+    {sku:'CEM001',descripcion:'Cemento Loma Negra 50kg',unidad:'Bolsa',stock_actual:18,stock_minimo:48,stock_optimo:96,costo_ars:5200,venta_prom_mes:80,estado:'CRÍTICO'},
+    {sku:'ARE001',descripcion:'Arena Fina x m3',unidad:'m3',stock_actual:25,stock_minimo:10,stock_optimo:24,costo_ars:15000,venta_prom_mes:20,estado:'OK'},
+    {sku:'LAD001',descripcion:'Ladrillo Hueco 12x18x33',unidad:'Millar',stock_actual:7300,stock_minimo:3000,stock_optimo:6000,costo_ars:120,venta_prom_mes:5,estado:'OK'},
+    {sku:'CAL001',descripcion:'Cal Hidratada 25kg',unidad:'Bolsa',stock_actual:60,stock_minimo:20,stock_optimo:48,costo_ars:2800,venta_prom_mes:40,estado:'OK'},
+    {sku:'HIE001',descripcion:'Hierro 8mm x 12m',unidad:'Unidad',stock_actual:8,stock_minimo:20,stock_optimo:42,costo_ars:9500,venta_prom_mes:30,estado:'CRÍTICO'},
+    {sku:'CER001',descripcion:'Cerámico 45x45',unidad:'Caja',stock_actual:22,stock_minimo:15,stock_optimo:30,costo_ars:8000,venta_prom_mes:25,estado:'BAJO'},
+    {sku:'PEG001',descripcion:'Pegamento Klaukol 30kg',unidad:'Bolsa',stock_actual:115,stock_minimo:30,stock_optimo:60,costo_ars:6000,venta_prom_mes:50,estado:'OK'},
+    {sku:'TOR001',descripcion:'Tornillo 6mm x 50mm',unidad:'Unidad',stock_actual:11500,stock_minimo:5000,stock_optimo:10000,costo_ars:15,venta_prom_mes:8000,estado:'OK'},
+    {sku:'PIN001',descripcion:'Pintura Látex Blanco 20L',unidad:'Balde',stock_actual:13,stock_minimo:10,stock_optimo:20,costo_ars:42000,venta_prom_mes:15,estado:'BAJO'},
+    {sku:'PLA001',descripcion:'Placa Yeso Durlock 9.5mm',unidad:'Unidad',stock_actual:55,stock_minimo:25,stock_optimo:50,costo_ars:9500,venta_prom_mes:40,estado:'OK'},
+    {sku:'CAN001',descripcion:'Caño Galvanizado 1" x 6m',unidad:'Unidad',stock_actual:0,stock_minimo:12,stock_optimo:25,costo_ars:9800,venta_prom_mes:20,estado:'SIN STOCK'},
+  ];
 }
 
-const fmt = n => Math.round(n||0).toLocaleString("es-AR");
-const fmtARS = n => "$"+fmt(n)+" ARS";
-const fU = (v,usd) => "$"+fmt(v/usd);
-const pct = (s,r) => r>0?Math.min(100,Math.round(s/r*100)):0;
+const fmt=n=>Math.round(n||0).toLocaleString('es-AR');
+const fU=v=>'$'+fmt(v/USD_RATE)+' USD';
+const fARS=v=>'$'+fmt(v)+' ARS';
 
-function rTabla(prods, usd) {
-  document.getElementById("tbody").innerHTML = prods.map(p => {
-    const rc=(p.estado==="CRÍTICO"||p.estado==="SIN STOCK")?"crit":p.estado==="BAJO"?"warn":"";
-    const bc=p.estado==="OK"?"bok":p.estado==="BAJO"?"bwn":"bct";
-    const sc=p.estado==="OK"?"sok":p.estado==="BAJO"?"swn":"sct";
-    const pp=pct(p.stock_actual,Math.max(p.stock_optimo*1.5,p.stock_actual,1));
-    const el=p.estado==="OK"?"✓ ok":p.estado==="BAJO"?"▲ bajo":p.estado==="SIN STOCK"?"✗ sin stock":"! crítico";
-    return `<tr${rc?' class="'+rc+'"':''}>
-      <td style="font-weight:600">${p.descripcion}</td>
-      <td><div class="bw"><div class="bf ${bc}" style="width:${pp}%"></div></div><strong>${p.stock_actual}</strong> <span style="font-size:11px;color:var(--text-2)">${p.unidad}</span></td>
-      <td><span class="${sc}">${el}</span></td>
-      <td style="font-size:12px;color:var(--green);font-weight:600">${p.stock_optimo}</td>
-      <td style="font-weight:600;color:var(--green)">${fU(p.stock_actual*p.costo_ars,usd)}</td></tr>`;
-  }).join("");
+function maxStock(p){return Math.round(p.stock_optimo*1.5);}
+
+function render(){
+  const totalARS=prods.reduce((a,p)=>a+p.stock_actual*p.costo_ars,0);
+  const faltantes=prods.filter(p=>p.stock_actual<p.stock_minimo);
+  const sobres=prods.filter(p=>p.stock_actual>maxStock(p));
+  const alerts=prods.filter(p=>p.estado==='CRÍTICO'||p.estado==='SIN STOCK');
+  const perdARS=faltantes.reduce((a,p)=>a+(p.stock_minimo-p.stock_actual)*p.costo_ars,0);
+  const muertoARS=sobres.reduce((a,p)=>a+(p.stock_actual-maxStock(p))*p.costo_ars,0);
+  const al=alerts.length;
+
+  document.getElementById('k-total').textContent=fU(totalARS);
+  document.getElementById('k-ars').textContent=fARS(totalARS);
+  document.getElementById('k-perd').textContent=fU(perdARS);
+  document.getElementById('k-perd-sub').textContent=faltantes.length+' producto'+(faltantes.length!==1?'s':'')+' bajo mínimo';
+  document.getElementById('k-muerto').textContent=fU(muertoARS);
+  document.getElementById('k-alertas').textContent=al;
+  document.getElementById('k-alertas').style.color=al>0?'var(--sc-red)':'var(--sc-green)';
+  document.getElementById('k-alertas-sub').textContent='de '+prods.length+' productos';
+  document.getElementById('top-meta').textContent=prods.length+' productos · '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+
+  rUrgente(faltantes,sobres);
+  rInventario();
+  rWA(faltantes,perdARS);
 }
 
-function rComp(prods, usd) {
-  const withV=prods.filter(p=>p.venta_prom_mes>0), noV=prods.filter(p=>p.venta_prom_mes===0);
-  const maxR=Math.max(...prods.map(p=>Math.max(p.stock_actual,p.stock_optimo)),1);
-  let html=withV.map(p=>{
-    const diff=p.stock_actual-p.stock_optimo;
-    let dc="dok",dt="✓ óptimo";
-    if(diff<-p.stock_optimo*0.1){dc="du";dt=`${Math.abs(diff)} bajo óptimo`;}
-    else if(diff>p.stock_optimo*0.5){dc="do";dt=`+${diff} sobre óptimo`;}
-    return `<div class="ci"><div class="ci-row"><span class="ci-name">${p.descripcion}</span><span class="delta ${dc}">${dt}</span></div>
-    <div class="bars">
-      <div class="bc"><div class="bcl">Real</div><div class="bcw"><div class="bcf br" style="width:${pct(p.stock_actual,maxR)}%"></div></div><div class="bcv">${p.stock_actual} <span>${fU(p.stock_actual*p.costo_ars,usd)}</span></div></div>
-      <div class="bc"><div class="bcl">Óptimo</div><div class="bcw"><div class="bcf bop" style="width:${pct(p.stock_optimo,maxR)}%"></div></div><div class="bcv">${p.stock_optimo} <span>${fU(p.stock_optimo*p.costo_ars,usd)}</span></div></div>
-    </div></div>`;
-  }).join("");
-  if(noV.length>0) html+=`<div style="padding:12px 8px;font-size:12px;color:var(--text-2)"><strong style="color:var(--text)">${noV.length} sin venta cargada</strong> — actualizá la columna Venta Prom/Mes en el Sheet.</div>`;
-  document.getElementById("comp-list").innerHTML=html||"<div style='padding:16px;font-size:13px;color:var(--text-2)'>Sin datos.</div>";
+function rUrgente(faltantes,sobres){
+  let html='';
+  if(!faltantes.length&&!sobres.length){
+    html='<div class="empty-state"><i class="ti ti-circle-check"></i>Todo en orden. Sin acciones urgentes hoy.</div>';
+  }else{
+    if(faltantes.length){
+      html+='<div class="seccion-label rojo"><i class="ti ti-trending-down"></i>Faltantes — perdés ventas ahora</div>';
+      html+=faltantes.map(p=>{
+        const diff=p.stock_minimo-p.stock_actual;
+        return`<div class="urgente-item faltante"><div><div class="ui-prod">${p.descripcion}</div><div class="ui-det">Tenés ${fmt(p.stock_actual)} ${p.unidad} · mínimo ${fmt(p.stock_minimo)} · faltan ${fmt(diff)}</div></div><div class="ui-monto"><div class="ui-monto-val red">-${fU(diff*p.costo_ars)}</div><div class="ui-monto-label">en riesgo este mes</div></div></div>`;
+      }).join('');
+    }
+    if(sobres.length){
+      html+='<div class="seccion-label naranja" style="margin-top:6px"><i class="ti ti-lock"></i>Sobrestock — plata parada sin rotar</div>';
+      html+=sobres.map(p=>{
+        const excess=p.stock_actual-maxStock(p);
+        return`<div class="urgente-item sobrestock"><div><div class="ui-prod">${p.descripcion}</div><div class="ui-det">Tenés ${fmt(p.stock_actual)} ${p.unidad} · máximo recomendado ${fmt(maxStock(p))} · sobran ${fmt(excess)}</div></div><div class="ui-monto"><div class="ui-monto-val amber">${fU(excess*p.costo_ars)}</div><div class="ui-monto-label">inmovilizado</div></div></div>`;
+      }).join('');
+    }
+  }
+  document.getElementById('urgente-contenido').innerHTML=html;
 }
 
-function rPerd(prods, usd) {
-  const cr=prods.filter(p=>p.stock_actual<p.stock_minimo);
-  const sinS=prods.filter(p=>p.stock_actual===0);
-  const tot=cr.reduce((a,p)=>a+(p.stock_minimo-p.stock_actual)*p.costo_ars,0);
-  const sinSV=sinS.reduce((a,p)=>a+p.stock_minimo*p.costo_ars,0);
-  document.getElementById("pn").textContent="$"+fmt(tot/usd)+" USD";
-  document.getElementById("pb").innerHTML=`
-    <div class="pb"><div class="pb-l">Sin stock</div><div class="pb-v" style="color:var(--accent)">$${fmt(sinSV/usd)} USD</div><div style="font-size:11px;color:var(--text-2);margin-top:2px">${sinS.length} en cero</div></div>
-    <div class="pb"><div class="pb-l">Proyección anual</div><div class="pb-v" style="color:var(--orange)">$${fmt(tot/usd*12)} USD</div><div style="font-size:11px;color:var(--text-2);margin-top:2px">si no cambia</div></div>`;
-  document.getElementById("pl").innerHTML=cr.length===0
-    ?"<div style='padding:14px;font-size:13px;color:var(--text-2)'>Sin faltantes.</div>"
-    :cr.map(p=>`<div class="pr"><span>${p.descripcion} <span style="font-size:11px;color:var(--text-2)">faltan ${p.stock_minimo-p.stock_actual} ${p.unidad}</span></span><span class="pr-amt">-$${fmt((p.stock_minimo-p.stock_actual)*p.costo_ars/usd)} USD</span></div>`).join("");
+function rInventario(){
+  const tb=document.getElementById('tbody');
+  tb.innerHTML=prods.map(p=>{
+    const est=p.estado;
+    const rc=(est==='CRÍTICO'||est==='SIN STOCK')?'crit':est==='BAJO'?'warn':'';
+    const ref=Math.max(maxStock(p),p.stock_actual,1);
+    const pct=Math.min(100,Math.round(p.stock_actual/ref*100));
+    const optPct=Math.min(100,Math.round(p.stock_optimo/ref*100));
+    const barColor=est==='OK'?'var(--sc-green)':est==='BAJO'?'var(--sc-amber)':'var(--sc-red)';
+    const pill=est==='OK'?`<span class="est-pill ep-ok"><i class="ti ti-check"></i> ok</span>`:
+      est==='BAJO'?`<span class="est-pill ep-bajo"><i class="ti ti-arrow-down"></i> bajo</span>`:
+      est==='CRÍTICO'?`<span class="est-pill ep-crit"><i class="ti ti-alert-triangle"></i> crítico</span>`:
+      est==='SIN STOCK'?`<span class="est-pill ep-cero"><i class="ti ti-x"></i> sin stock</span>`:
+      `<span class="est-pill ep-sobre"><i class="ti ti-arrow-up"></i> sobrestock</span>`;
+    return`<tr${rc?' class="'+rc+'"':''}><td style="font-weight:600">${p.descripcion}</td><td><div class="stock-track"><div class="stock-fill" style="width:${pct}%;background:${barColor}"></div><div class="stock-marker" style="left:${optPct}%"></div></div><span style="font-weight:600">${fmt(p.stock_actual)}</span> <span style="font-size:11px;color:var(--text2)">${p.unidad}</span></td><td>${pill}</td><td style="font-weight:600;color:var(--sc-blue)">${fU(p.stock_actual*p.costo_ars)}</td></tr>`;
+  }).join('');
 }
 
-function rMovs() {
-  let movs=data.movimientos;
-  if(movFilter==="entrada") movs=movs.filter(m=>m.tipo==="entrada");
-  else if(movFilter==="salida") movs=movs.filter(m=>m.tipo==="salida");
-  else if(movFilter==="whatsapp") movs=movs.filter(m=>m.origen==="whatsapp");
-  if(movs.length===0){document.getElementById("mov-list").innerHTML="<div style='padding:16px;font-size:13px;color:var(--text-2)'>Sin movimientos registrados.</div>";return;}
-  document.getElementById("mov-list").innerHTML=movs.slice(0,50).map(m=>{
-    const icClass=m.tipo==="entrada"?"mic-in":m.tipo==="salida"?"mic-out":"mic-adj";
-    const ico=m.tipo==="entrada"?"↑":m.tipo==="salida"?"↓":"≈";
-    const qClass=m.tipo==="entrada"?"mqin":m.tipo==="salida"?"mqout":"mqadj";
-    const oClass=m.origen==="whatsapp"?"ow":m.origen==="import"?"oi":"om";
-    const qStr=m.cantidad>0?"+"+m.cantidad:m.cantidad;
-    return `<div class="mov-item"><div class="mov-ic ${icClass}">${ico}</div>
-    <div class="mov-main"><div class="mov-prod">${m.descripcion}</div>
-    <div class="mov-meta">${m.fecha}${m.nota&&m.nota!=="null"?" · "+m.nota:""}</div>
-    <span class="orig-badge ${oClass}">${m.origen}</span></div>
-    <div class="mov-right"><div class="mov-qty ${qClass}">${qStr}</div><div class="mov-stock">→ ${m.stock_nuevo}</div></div></div>`;
-  }).join("");
-}
-
-function filtrarMov(f,btn){movFilter=f;document.querySelectorAll(".mf").forEach(b=>b.classList.remove("active"));btn.classList.add("active");rMovs();}
-
-function rROI(){
-  const v=parseInt(document.getElementById("rv").value)||8000;
-  const pp=parseInt(document.getElementById("rp").value)||8;
-  const pr=parseInt(document.getElementById("rr").value)||60;
-  document.getElementById("svv").textContent="$"+fmt(v);
-  document.getElementById("svp").textContent=pp+"%";
-  document.getElementById("svr").textContent=pr+"%";
-  const pm=Math.round(v*pp/100),rec=Math.round(pm*pr/100),neto=rec-25,roi=Math.round(neto/25*100);
-  document.getElementById("roi-cards").innerHTML=`
-    <div class="roi-c"><div class="roi-cl">Perdés/mes</div><div class="roi-cv r">$${fmt(pm)}</div></div>
-    <div class="roi-c"><div class="roi-cl">Recuperás</div><div class="roi-cv g">$${fmt(rec)}</div></div>
-    <div class="roi-c"><div class="roi-cl">ROI</div><div class="roi-cv ${roi>0?'g':'r'}">${roi>0?'+':''}${fmt(roi)}%</div></div>`;
-  document.getElementById("roi-v").className="roi-v "+(neto>0?"vp":"vn");
-  document.getElementById("roi-v").textContent=neto>0?`Ganás $${fmt(neto)} USD netos/mes. Se paga solo en ${Math.ceil(25/rec*30)} días.`:"Ajustá los sliders para ver el punto de equilibrio.";
-}
-
-function rWA(prods, d) {
-  const hora=new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
-  document.getElementById("wa-tm").textContent=hora;
-  const cr=prods.filter(p=>p.estado==="CRÍTICO"||p.estado==="SIN STOCK");
-  let msg="";
-  if(cr.length===0){msg="Buen día. Todo tu stock está en nivel óptimo. ✓";}
+function rWA(faltantes,perdARS){
+  const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('wa-tm').textContent=hora;
+  let msg='';
+  if(!faltantes.length){msg='Buen día. Todo tu stock está en orden hoy. Sin alertas urgentes.';}
   else{
-    const pu=Math.round(cr.reduce((a,p)=>a+(p.stock_minimo-p.stock_actual)*p.costo_ars,0)/(d.usd_rate||1200));
-    msg=`Buen día. Tenés ${cr.length} producto${cr.length>1?"s":""} crítico${cr.length>1?"s":""}:\n\n`;
-    cr.slice(0,4).forEach(p=>{msg+=`${p.stock_actual===0?"✗":"!"} ${p.descripcion}: ${p.stock_actual} ${p.unidad} (mín: ${p.stock_minimo})\n`;});
-    if(pu>0)msg+=`\nEn riesgo: ~$${fmt(pu)} USD este mes.`;
-    msg+=`\n\nStock Claro · ${hora}`;
+    msg=`Buen día. Tenés ${faltantes.length} producto${faltantes.length>1?'s':''} con faltantes:\n\n`;
+    faltantes.slice(0,4).forEach(p=>{msg+=`${p.stock_actual===0?'✗':'!'} ${p.descripcion}: ${fmt(p.stock_actual)} ${p.unidad} (mín: ${fmt(p.stock_minimo)})\n`;});
+    msg+=`\nEstimado en riesgo: ${fU(perdARS)} este mes.\n\nStock Claro · ${hora}`;
   }
-  document.getElementById("wa-tx").textContent=msg;
+  document.getElementById('wa-tx').textContent=msg;
 }
 
-function sw(name){
-  const names=["stock","comp","perd","movs","roi"];
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",names[i]===name));
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-  document.getElementById("panel-"+name).classList.add("active");
-  if(name==="movs")rMovs();
+function sw(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
 }
 
 loadData();
